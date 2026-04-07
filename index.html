@@ -1,35 +1,102 @@
+<!-- This tells the browser "this is a modern HTML5 document." Every HTML page starts with this. -->
 <!DOCTYPE html>
+
+<!-- Opening tag of the entire page. Everything visible and invisible lives between <html> and </html>.
+     lang="en" tells browsers and screen readers "this page is in English." -->
 <html lang="en">
+
+<!-- The <head> is like the backstage area. Nothing in here is shown on the page directly —
+     it's all instructions and metadata ABOUT the page. -->
 <head>
+
+<!-- Tells the browser which alphabet/character set to use. UTF-8 supports basically every language and emoji on Earth. -->
 <meta charset="UTF-8">
+
+<!-- Instructions for mobile phones: "make the page fit the screen width, don't let the user pinch-to-zoom."
+     This is what makes it feel like a native app rather than a tiny desktop website on a phone. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- The text that appears in your browser tab. -->
 <title>The Group Chat — The Gospel According to iMessage</title>
+
+<!-- A summary of the page used by search engines (Google) when listing your site in results. -->
 <meta name="description" content="Biblical events reimagined as iMessage group conversations. Funny, reverent, and theologically grounded.">
+
+<!-- "og" stands for Open Graph. These three tags control what preview card appears when someone
+     shares your link on social media (Facebook, iMessage, Slack, etc.).
+     They set the title, description, and type of the preview. -->
 <meta property="og:title" content="The Group Chat — The Gospel According to iMessage">
 <meta property="og:description" content="What if the disciples had a group chat?">
 <meta property="og:type" content="website">
+
+<!-- Sets the tiny icon (favicon) shown in the browser tab. Instead of a separate image file,
+     this embeds a fish emoji directly as an SVG image using code. Avoids needing an extra file. -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐟</text></svg>">
+
+<!-- This is CSS — the language that controls how things LOOK on the page.
+     CSS uses /* comment */ syntax instead of the HTML comment syntax. -->
 <style>
+  /* The * means "every element on the page." This resets all spacing to zero so you have full control,
+     and makes size calculations include borders/padding (less confusing math). */
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* Sets the page background to black, text to white, uses Apple's system font (the same font your iPhone uses),
+     prevents scrolling, and makes the page exactly as tall as the screen (100dvh = 100% of dynamic viewport height). */
   body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif; overflow: hidden; height: 100dvh; }
+
+  /* #root is the one container div where the whole app lives. It's capped at 420px wide (phone-width),
+     centered horizontally, and uses flexbox (a layout system) to stack things vertically. */
   #root { height: 100dvh; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Hides the scrollbar so it looks cleaner, like a real iMessage app. */
   ::-webkit-scrollbar { width: 0; }
+
+  /* These define animations — reusable animation blueprints.
+     fadeIn makes messages slide up slightly and fade in.
+     fadeInMenu does the same for menu items in the episode list. */
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeInMenu { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Styles each episode in the list: laid out as a horizontal row with spacing,
+     a subtle bottom border, and the fadeInMenu animation. */
   .ep-row { display: flex; gap: 14px; align-items: center; padding: 14px 12px; border-bottom: 1px solid #1C1C1E; cursor: pointer; transition: background 0.15s; animation: fadeInMenu 0.3s ease both; }
+
+  /* On hover or tap, the episode row background darkens slightly. */
   .ep-row:hover, .ep-row:active { background: #1C1C1E; }
+
+  /* Styles each chat message bubble: dark gray background, rounded corners,
+     specific font size, and the fadeIn animation when it appears. */
   .msg-bubble { background: #1C1C1E; border-radius: 18px; padding: 8px 14px; font-size: 14px; line-height: 1.4; color: #E5E5EA; max-width: 88%; word-wrap: break-word; animation: fadeIn 0.25s ease; }
 </style>
 </head>
+
+<!-- The <body> is everything the user actually sees. -->
 <body>
+
+<!-- A single empty div that acts as a placeholder. The JavaScript code below will fill it
+     with the entire app. This is how React works: you give it one empty container
+     and it builds everything inside it dynamically. -->
 <div id="root"></div>
+
+<!-- Loading external JavaScript libraries from the internet: -->
+<!-- React — a popular library for building user interfaces out of reusable "components" (like building blocks). -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<!-- ReactDOM — the part of React that knows how to put things on a webpage. -->
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<!-- Babel — a translator that converts modern/fancy JavaScript syntax (called JSX, which looks like
+     HTML mixed into JavaScript) into plain JavaScript that browsers can actually run. -->
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <!-- Episode data: each file pushes to window.EPISODES -->
 <!-- To add a new episode: create a .js file in episodes/ and add a script tag here in chronological order -->
+
+<!-- Creates an empty list (array) called EPISODES that's accessible everywhere. Think of it as an empty playlist. -->
 <script>window.EPISODES = [];</script>
+
+<!-- Each of these loads a separate file that adds one episode to the EPISODES list.
+     There are 17 episodes total, from "01-origin" to "17-resurrection."
+     Each file contains the messages, characters, and metadata for one biblical scene
+     reimagined as a group chat. -->
 <script src="episodes/01-origin.js"></script>
 <script src="episodes/02-cana.js"></script>
 <script src="episodes/03-roof.js"></script>
@@ -48,13 +115,25 @@
 <script src="episodes/16-temple.js"></script>
 <script src="episodes/17-resurrection.js"></script>
 
+<!-- type="text/babel" tells the browser to let Babel translate this code before running it.
+     This is the entire app, built using React. JavaScript uses // and /* */ for comments. -->
 <script type="text/babel">
+
+// Importing React "hooks" — special functions that let components remember things and react to changes:
+// useState — lets a component remember things (like which episode is selected)
+// useEffect — lets a component do things in response to changes (like set a timer)
+// useRef — lets a component point to a specific spot on the page (like the bottom of the chat, for auto-scrolling)
 const { useState, useEffect, useRef } = React;
 
+// Takes a name like "Simon Peter" and returns "SP".
+// Splits the name by spaces, grabs the first letter of each word, joins them, and takes at most 2 characters.
+// Used for the small circular avatars next to messages.
 function getInitials(name) {
   return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
+// Avatar component: a small colored circle with initials inside it (like contact icons in iMessage).
+// Takes a name and color, and renders a round div with the initials centered in it.
 function Avatar({ name, color }) {
   return (
     <div style={{
@@ -66,11 +145,21 @@ function Avatar({ name, color }) {
   );
 }
 
+// ChatView component — the main chat screen that displays a single episode as an iMessage-style conversation.
 function ChatView({ episode, onBack }) {
+
+  // State variables:
+  // visibleCount — how many messages have appeared so far (starts at 0)
+  // started — whether the user has tapped "Open Chat" yet
+  // bottomRef — a reference to the bottom of the chat so it can auto-scroll
   const [visibleCount, setVisibleCount] = useState(0);
   const [started, setStarted] = useState(false);
   const bottomRef = useRef(null);
 
+  // Message timing effect: makes messages appear one-by-one with realistic delays.
+  // After each message appears, it waits a random time (1.2–3.6 seconds for regular messages,
+  // 3.2 seconds for system messages) before showing the next one.
+  // It's simulating people typing in real time.
   useEffect(() => {
     if (!started || visibleCount >= episode.messages.length) return;
     const m = episode.messages[visibleCount];
@@ -79,10 +168,15 @@ function ChatView({ episode, onBack }) {
     return () => clearTimeout(t);
   }, [visibleCount, started]);
 
+  // Auto-scroll effect: every time a new message appears, the chat smoothly scrolls to the bottom —
+  // just like real iMessage.
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [visibleCount]);
 
+  // Message grouping logic: figures out which messages need a sender name shown above them
+  // and which get the avatar. In real iMessage, if the same person sends multiple messages in a row,
+  // their name and photo only show on the first/last message. This logic replicates that.
   const msgs = episode.messages.slice(0, visibleCount);
   const grouped = msgs.map((m, i, arr) => ({
     ...m,
@@ -90,6 +184,9 @@ function ChatView({ episode, onBack }) {
     isLast: m.type !== "system" && (i === arr.length - 1 || arr[i + 1]?.sender !== m.sender || arr[i + 1]?.type === "system"),
   }));
 
+  // Dynamic header name: some episodes have a group chat that gets renamed during the conversation
+  // (like when someone types "Peter named the group 'The Twelve'"). This code scans the visible
+  // messages to find the most recent rename and uses that as the chat header.
   let headerName = episode.headerName || "The Twelve (+) 🐟";
   if (episode.dynamicHeader) {
     for (let i = msgs.length - 1; i >= 0; i--) {
@@ -104,12 +201,19 @@ function ChatView({ episode, onBack }) {
     }
   }
 
+  // Member count: for dynamic episodes, counts how many "added" system messages have appeared.
+  // Otherwise defaults to 14.
   const memberCount = episode.dynamicHeader
     ? msgs.filter(m => m.type === "system" && m.text?.includes("added")).length
     : (episode.memberCount || 14);
 
+  // Everything below here is what gets rendered (the visual layout) — the entire chat screen, top to bottom.
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: "#000", color: "#fff", overflow: "hidden" }}>
+
+      {/* Fake iPhone status bar: shows the time, a dark pill shape (Dynamic Island/notch),
+          signal bars, and a battery icon that changes color based on level
+          (green > 50%, yellow > 30%, red below). */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px 0", fontSize: 12, fontWeight: 600 }}>
         <span>{episode.time}</span>
         <div style={{ width: 80, height: 12, background: "#1C1C1E", borderRadius: 20 }} />
@@ -120,15 +224,23 @@ function ChatView({ episode, onBack }) {
           </div>
         </div>
       </div>
+
+      {/* Chat header bar: blue back arrow, the group name centered, and the member count. */}
       <div style={{ padding: "6px 16px 10px", borderBottom: "1px solid #2C2C2E", display: "flex", alignItems: "center", gap: 12 }}>
         <div onClick={onBack} style={{ fontSize: 28, color: "#0A84FF", cursor: "pointer", padding: "0 4px", lineHeight: 1 }}>‹</div>
         <div style={{ flex: 1, textAlign: "center" }}>
           <div style={{ fontSize: 14, fontWeight: 700 }}>{headerName}</div>
           <div style={{ fontSize: 11, color: "#8E8E93" }}>{memberCount} members</div>
         </div>
+        {/* Empty div to balance the back arrow so the title stays centered */}
         <div style={{ width: 28 }} />
       </div>
+
+      {/* The scrollable message area */}
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 12px 20px", display: "flex", flexDirection: "column", gap: 2 }}>
+
+        {/* Before you tap "Open Chat," this splash screen shows the episode emoji, title,
+            subtitle, location, scripture reference, and a blue "Open Chat" button. */}
         {!started && (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: "40px 20px" }}>
             <div style={{ fontSize: 48 }}>{episode.emoji}</div>
@@ -142,7 +254,12 @@ function ChatView({ episode, onBack }) {
             </button>
           </div>
         )}
+
+        {/* Loop through each visible message and render it */}
         {grouped.map((m, i) => {
+
+          // System messages (like "Peter added Andrew") — centered, gray, smaller text.
+          // Special "chapter" markers (with the book emoji) get bold and larger styling.
           if (m.type === "system") {
             const isChapter = m.text?.includes("📖");
             const isScene = m.text?.includes("Meanwhile") || m.text?.match(/^Day \d/);
@@ -156,11 +273,18 @@ function ChatView({ episode, onBack }) {
               }}>{m.text}</div>
             );
           }
+
+          // Regular chat messages: avatar circle on the left, sender name in their color
+          // (only on the first message of a consecutive group), and the message bubble
+          // with text and a tiny timestamp.
           return (
             <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-end", marginTop: m.showSender ? 10 : 1 }}>
+              {/* Avatar only shows on the last message in a consecutive group from the same sender */}
               <div style={{ width: 28, flexShrink: 0 }}>{m.isLast && <Avatar name={m.sender} color={m.color} />}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
+                {/* Sender name only shows on the first message in a consecutive group */}
                 {m.showSender && <div style={{ fontSize: 11, fontWeight: 600, color: m.color, marginBottom: 2, marginLeft: 10 }}>{m.sender}</div>}
+                {/* The message bubble itself — bottom-left corner is sharper on the last message (iMessage style) */}
                 <div className="msg-bubble" style={{ borderBottomLeftRadius: m.isLast ? 4 : 18 }}>
                   {m.msg}
                   <span style={{ fontSize: 9, color: "#636366", marginLeft: 8, whiteSpace: "nowrap" }}>{m.time}</span>
@@ -169,8 +293,13 @@ function ChatView({ episode, onBack }) {
             </div>
           );
         })}
+
+        {/* Invisible element at the bottom — used as the scroll target so auto-scroll works */}
         <div ref={bottomRef} />
       </div>
+
+      {/* Fake input bar at the bottom — a "+" button, a gray "iMessage" text field, and a microphone icon.
+          This is just decorative (you can't actually type). Only shows after chat has started. */}
       {started && (
         <div style={{ padding: "8px 12px 24px", borderTop: "1px solid #2C2C2E", display: "flex", gap: 8, alignItems: "center" }}>
           <div style={{ fontSize: 20, color: "#8E8E93" }}>+</div>
@@ -182,16 +311,24 @@ function ChatView({ episode, onBack }) {
   );
 }
 
+// App component — the episode list (home screen). This is the first screen you see when opening the app.
 function App() {
+
+  // "selected" tracks which episode you've tapped (or null if none).
   const [selected, setSelected] = useState(null);
   const episodes = window.EPISODES || [];
 
+  // If an episode is selected, show the ChatView for that episode.
+  // The onBack function sets selected back to null to return to this list.
   if (selected !== null) {
     return <ChatView episode={episodes[selected]} onBack={() => setSelected(null)} />;
   }
 
+  // Otherwise, show the episode list (home screen).
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: "#000", color: "#fff", overflow: "hidden" }}>
+
+      {/* Fake iPhone status bar (always shows "9:00 AM" and full green battery on the home screen) */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 20px 0", fontSize: 12, fontWeight: 600 }}>
         <span>9:00 AM</span>
         <div style={{ width: 80, height: 12, background: "#1C1C1E", borderRadius: 20 }} />
@@ -202,25 +339,35 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* App title and subtitle */}
       <div style={{ padding: "16px 20px 4px" }}>
         <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.5 }}>The Group Chat</div>
         <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 2 }}>The Gospel According to iMessage</div>
       </div>
+
+      {/* Scrollable list of episodes */}
       <div style={{ flex: 1, overflowY: "auto", padding: "8px 16px 32px" }}>
+        {/* Loop through each episode and render a tappable row */}
         {episodes.map((ep, i) => (
           <div key={ep.id} className="ep-row" onClick={() => setSelected(i)} style={{ animationDelay: `${i * 0.03}s` }}>
+            {/* Episode emoji icon (rounded square, like an app icon) */}
             <div style={{
               width: 48, height: 48, borderRadius: 14, background: "#1C1C1E",
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0,
             }}>{ep.emoji}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Title and episode number on the same line */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ep.title}</div>
                 <div style={{ fontSize: 11, color: "#8E8E93", flexShrink: 0 }}>Ep {i + 1}</div>
               </div>
+              {/* Subtitle (short description of the episode) */}
               <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ep.subtitle}</div>
+              {/* Scripture reference (e.g. "John 2:1-12") */}
               <div style={{ fontSize: 11, color: "#48484A", marginTop: 2 }}>{ep.scripture}</div>
             </div>
+            {/* Chevron arrow indicating the row is tappable */}
             <div style={{ color: "#636366", fontSize: 18, flexShrink: 0 }}>›</div>
           </div>
         ))}
@@ -232,6 +379,8 @@ function App() {
   );
 }
 
+// This is the "ignition key" that starts everything.
+// It tells React: "find the empty <div id='root'> on the page, and fill it with the App component."
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
 </script>
